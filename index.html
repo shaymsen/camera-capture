@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Camera Capture</title>
+</head>
+<body>
+  <h2>📸 Take a Photo</h2>
+  <video id="video" width="300" autoplay></video>
+  <br />
+  <button id="snap">Capture Photo</button>
+  <canvas id="canvas" width="300" height="200"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const snap = document.getElementById('snap');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Camera access denied or unavailable");
+        console.error(err);
+      });
+
+    snap.addEventListener('click', () => {
+      context.drawImage(video, 0, 0, 300, 200);
+      const imageData = canvas.toDataURL('image/png');
+      console.log("Captured image data:", imageData);
+    });
+  </script>
+</body>
+</html>
