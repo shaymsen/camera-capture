@@ -2,35 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Camera Capture</title>
+  <title>Auto Capture Photo</title>
 </head>
 <body>
-  <h2>📸 Take a Photo</h2>
-  <video id="video" width="300" autoplay></video>
-  <br />
-  <button id="snap">Capture Photo</button>
-  <canvas id="canvas" width="300" height="200"></canvas>
+  <h2>📸 Auto Capture Photo</h2>
+  <video id="video" width="300" autoplay playsinline></video>
+  <canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
-    const snap = document.getElementById('snap');
 
-    navigator.mediaDevices.getUserMedia({ video: true })
+    // કેમેરા એક્સેસ માંગો અને સ્ટ્રીમ શરુ કરો
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
       .then(stream => {
         video.srcObject = stream;
+
+        // 2 સેકંડ પછી ફોટો ખેંચો (આ સમય ઘટાડો કે વધારશો)
+        setTimeout(() => {
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = canvas.toDataURL('image/png');
+
+          console.log("Auto captured image data:", imageData);
+
+          // અહીંથી તમે ફોટો Email/Server પર મોકલવાનો કોડ લગાવો
+          alert("Photo captured automatically!");
+
+          // સ્ટ્રીમ બંધ કરો (optional)
+          stream.getTracks().forEach(track => track.stop());
+
+        }, 2000); // 2000 milliseconds = 2 seconds
       })
       .catch(err => {
-        alert("Camera access denied or unavailable");
-        console.error(err);
+        alert("Camera permission denied or error: " + err);
       });
-
-    snap.addEventListener('click', () => {
-      context.drawImage(video, 0, 0, 300, 200);
-      const imageData = canvas.toDataURL('image/png');
-      console.log("Captured image data:", imageData);
-    });
   </script>
 </body>
 </html>
